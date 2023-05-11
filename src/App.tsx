@@ -10,7 +10,7 @@ function App() {
   return (
     <div>
       <Routes>
-        {/* Home Page */}
+        {/* Home/Profile Page */}
         <Route path="/" element={!user ? (<Navigate to={'/login'} />) : (<ProfilePage />)}></Route>
 
         {/* Authorization Page */}

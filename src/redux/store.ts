@@ -8,13 +8,15 @@ const middlewares = [logger];
 export const store = createStore(rootReducer, applyMiddleware(...middlewares));
 export const persistor = persistStore(store);
 
+const uData = localStorage.getItem('userData')
+
 export function authHeader() {
     // return authorization header with basic auth credentials
-    let user = JSON.parse(localStorage.getItem('userData') || '');
+    let user = uData && JSON.parse(uData);
     let auth = null;
     if (user && user.token) {
-        auth = { 
-            Authorization: `Bearer ${user.token}`, 
+        auth = {
+            Authorization: `Bearer ${user.token}`,
             "X-Authorization": user.token
         };
     } else {
@@ -23,5 +25,5 @@ export function authHeader() {
     return auth;
 }
 
-export const userData = JSON.parse(localStorage.getItem('userData') || '')
+export const userData = uData && JSON.parse(uData)
 export const user = userData ? userData.user : null;
