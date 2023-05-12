@@ -1,13 +1,13 @@
 import axios from 'axios'
 import { useEffect, useState } from 'react'
-import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai'
 import { useDispatch } from 'react-redux'
 import { toast } from 'react-toastify'
 import { setCurrentUser } from '../redux/user/user.actions'
 import Auth from '../components/Auth'
+import Input from '../components/Input'
+import Button from '../components/Button'
 
 export default function SignInPage() {
-	const [viewPassword, setViewPassword] = useState(false)
 	const [email, setEmail] = useState("")
 	const [password, setPassword] = useState("")
 	const [loading, setLoading] = useState(true)
@@ -76,51 +76,28 @@ export default function SignInPage() {
 	useEffect(() => setLoading(false), [])
 
 	return (
-		<Auth handleSubmit={handleSubmit}>
-			<div className="form-group">
-				<label htmlFor="email">Email</label>
-				<div className="form-control">
-					<input
-						type="email" id="email"
-						className="input w-full"
-						placeholder="Youremail@mail.com"
-						value={email}
-						onChange={handleInput}
-					/>
-				</div>
-				{errors?.email?.trim().length > 0 && <small className="text-red-600">{errors?.email}</small>}
-			</div>
-			<div className="form-group">
-				<label htmlFor="password">Password</label>
-				<div className="form-control flex justify-between items-center space-x-2">
-					<input
-						type={`${viewPassword ? 'text' : 'password'}`}
-						id="password" className="input flex-grow"
-						placeholder="••••••"
-						value={password}
-						onChange={handleInput}
-					/>
-					{viewPassword ? (
-						<AiOutlineEyeInvisible className="text-xl cursor-pointer" onClick={() => setViewPassword(!viewPassword)} />
-					) : (
-						< AiOutlineEye className="text-xl cursor-pointer" onClick={() => setViewPassword(!viewPassword)} />
-					)}
+		<Auth
+			handleSubmit={handleSubmit}
+			heading='Welcome back!'
+			subHeading='Sign in to your account and continue your journey towards improved productivity.'
+		>
+			<Input
+				type="email" title="Email" id="email"
+				placeholder='Youremail@mail.com'
+				value={email} error={errors?.email}
+				event={handleInput}
+			/>
 
-				</div>
-				{errors?.password?.trim().length > 0 && <small className="text-red-600">{errors?.password}</small>}
-			</div>
-			<div className="form-group">
-				{loading ? (
-					<button
-						type='button'
-						className="px-4 py-2 border bg-blue-500 rounded-md w-full text-white text-center mt-4 cursor-not-allowed flex justify-center items-center"
-						disabled>
-						<img src="/loading.svg" alt="Loading . . ." height={30} width={30} />
-					</button>
+			<Input
+				title="Password" id="password"
+				value={password}
+				error={errors?.password}
+				event={handleInput}
+				isPassword={true}
+			/>
 
-				) : (
-					<button type='submit' className="px-4 py-2 border bg-blue-600 rounded-md w-full text-white text-center mt-4">Sign In</button>
-				)}
+			<div className="form-group">
+				<Button loading={loading} title="Sign In" />
 			</div>
 		</Auth>
 	)
