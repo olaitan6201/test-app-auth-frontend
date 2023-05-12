@@ -11,24 +11,25 @@ import SignUpPage from './pages/SignUpPage';
 
 function App() {
   const user = useSelector(selectCurrentUser)
+  const userLoggedIn = localStorage.getItem('API_TOKEN') && user?.email
   return (
     <div>
       <ToastContainer />
       <Routes>
         {/* Home/Profile Page */}
-        <Route path="/" element={!user ? (<Navigate to={'/login'} />) : (<ProfilePage user={user} />)}></Route>
+        <Route path="/" element={!userLoggedIn ? (<Navigate to={'/login'} />) : (<ProfilePage user={user} />)}></Route>
 
         {/* Authorization Pages */}
         <Route path='/login'
           element={
-            user ?
+            userLoggedIn ?
               (< Navigate replace to="/" />) :
               (< SignInPage />)
           }
         />
         <Route path='/register'
           element={
-            user ?
+            userLoggedIn ?
               (< Navigate replace to="/" />) :
               (< SignUpPage />)
           }
