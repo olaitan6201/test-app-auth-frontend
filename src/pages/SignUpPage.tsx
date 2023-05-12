@@ -5,7 +5,7 @@ import { toast } from 'react-toastify'
 import { setCurrentUser } from '../redux/user/user.actions'
 import Auth from '../components/Auth'
 import Input from '../components/Input'
-import Button from '../components/Button'
+import AuthButton from '../components/AuthButton'
 
 export default function SignUpPage() {
 	const [name, setName] = useState("")
@@ -130,7 +130,7 @@ export default function SignUpPage() {
 			/>
 
 			<div className="form-group">
-				<Button loading={loading} title="Sign Up" />
+				<AuthButton loading={loading} title="Sign Up" />
 			</div>
 		</Auth>
 	)

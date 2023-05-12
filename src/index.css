@@ -22,16 +22,20 @@ code {
     monospace;
 }
 
-@layer components{
-  .form-group{
+@layer components {
+  .form-group {
     @apply p-2 space-y-2;
   }
 
-  .form-control{
+  .form-control {
     @apply w-full px-3 py-2 border rounded-md border-black;
   }
 
-  .input{
+  .input {
     @apply font-thin outline-none border-none;
+  }
+
+  .btn {
+    @apply px-4 py-2 border rounded-md text-center;
   }
 }
