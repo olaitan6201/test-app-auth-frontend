@@ -1,6 +1,5 @@
 import './App.css';
 import { Navigate, Route, Routes } from 'react-router-dom';
-import { userData } from './redux/store';
 import ProfilePage from './pages/ProfilePage';
 import AuthPage from './pages/AuthPage';
 
