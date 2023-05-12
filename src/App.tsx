@@ -4,11 +4,13 @@ import { userData } from './redux/store';
 import ProfilePage from './pages/ProfilePage';
 import AuthPage from './pages/AuthPage';
 
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useSelector } from 'react-redux';
+import { selectCurrentUser } from './redux/user/user.selectors';
 
 function App() {
-  const user = userData ? userData?.user : null;
+  const user = useSelector(selectCurrentUser)
   return (
     <div>
       <ToastContainer />
