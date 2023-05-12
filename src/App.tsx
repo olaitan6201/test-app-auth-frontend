@@ -16,7 +16,7 @@ function App() {
       <ToastContainer />
       <Routes>
         {/* Home/Profile Page */}
-        <Route path="/" element={!user ? (<Navigate to={'/login'} />) : (<ProfilePage />)}></Route>
+        <Route path="/" element={!user ? (<Navigate to={'/login'} />) : (<ProfilePage user={user} />)}></Route>
 
         {/* Authorization Page */}
         <Route path='/login'
