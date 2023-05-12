@@ -6,6 +6,7 @@ import { setCurrentUser } from '../redux/user/user.actions'
 import Auth from '../components/Auth'
 import Input from '../components/Input'
 import AuthButton from '../components/AuthButton'
+import { Link } from 'react-router-dom'
 
 export default function SignInPage() {
 	const [email, setEmail] = useState("")
@@ -98,6 +99,9 @@ export default function SignInPage() {
 
 			<div className="form-group">
 				<AuthButton loading={loading} title="Sign In" />
+				<p>Don't have an account?
+					<Link to={"/register"} className='text-blue-600 p-2 underline underline-offset-2 cursor-pointer'>Sign Up</Link>
+				</p>
 			</div>
 		</Auth>
 	)

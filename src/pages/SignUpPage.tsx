@@ -6,6 +6,7 @@ import { setCurrentUser } from '../redux/user/user.actions'
 import Auth from '../components/Auth'
 import Input from '../components/Input'
 import AuthButton from '../components/AuthButton'
+import { Link } from 'react-router-dom'
 
 export default function SignUpPage() {
 	const [name, setName] = useState("")
@@ -26,7 +27,7 @@ export default function SignUpPage() {
 		if (password_confirmation.trim().length === 0)
 			return setErrors({ ...errors, password_confirmation: "This field is required" })
 		if (password_confirmation.trim() !== password.trim())
-			return setErrors({ ...errors, password_confirmation: "This field is required" })
+			return setErrors({ ...errors, password_confirmation: "Password confirmation failed!" })
 		setLoading(true)
 		try {
 			const res = await axios.post(`${url}/register`, { name, email, password, password_confirmation })
@@ -94,43 +95,47 @@ export default function SignUpPage() {
 	useEffect(() => setLoading(false), [])
 
 	return (
-		<Auth 
+		<Auth
 			handleSubmit={handleSubmit}
-			heading='Welcome back!'
-			subHeading='Sign in to your account and continue your journey towards improved productivity.'
+			heading='Sign Up!'
+			subHeading='Sign up now to start your journey towards improved productivity.'
 		>
-			<Input 
-				type="text" title="Name" id="name" 
-				placeholder='Your Name' 
+			<Input
+				type="text" title="Name" id="name"
+				placeholder='Your Name'
 				value={name} error={errors?.name}
-				event={handleInput} 
+				event={handleInput}
 			/>
 
-			<Input 
-				type="email" title="Email" id="email" 
-				placeholder='Youremail@mail.com' 
+			<Input
+				type="email" title="Email" id="email"
+				placeholder='Youremail@mail.com'
 				value={email} error={errors?.email}
-				event={handleInput} 
+				event={handleInput}
 			/>
 
-			<Input 
-				title="Password" id="password" 
-				value={password} 
+			<Input
+				title="Password" id="password"
+				value={password}
 				error={errors?.password}
-				event={handleInput} 
+				event={handleInput}
 				isPassword={true}
 			/>
 
-			<Input 
-				title="Confirm Password" id="password_confirmation" 
-				value={password_confirmation} 
+			<Input
+				title="Confirm Password" id="password_confirmation"
+				value={password_confirmation}
 				error={errors?.password_confirmation}
-				event={handleInput} 
+				event={handleInput}
 				isPassword={true}
 			/>
 
 			<div className="form-group">
 				<AuthButton loading={loading} title="Sign Up" />
+
+				<p>Already have an account?
+					<Link to={"/login"} className='text-blue-600 p-2 underline underline-offset-2 cursor-pointer'>Sign In</Link>
+				</p>
 			</div>
 		</Auth>
 	)
