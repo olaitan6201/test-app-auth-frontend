@@ -1,14 +1,17 @@
-import ReduxToastr from 'react-redux-toastr';
 import './App.css';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { userData } from './redux/store';
 import ProfilePage from './pages/ProfilePage';
 import AuthPage from './pages/AuthPage';
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 function App() {
   const user = userData ? userData?.user : null;
   return (
     <div>
+      <ToastContainer />
       <Routes>
         {/* Home/Profile Page */}
         <Route path="/" element={!user ? (<Navigate to={'/login'} />) : (<ProfilePage />)}></Route>
@@ -22,18 +25,6 @@ function App() {
           }
         />
       </Routes>
-
-      <ReduxToastr
-        timeOut={4000}
-        newestOnTop={false}
-        preventDuplicates
-        position="bottom-center"
-        // getState={(state: any) => state.toastr} // This is the default
-        transitionIn="fadeIn"
-        transitionOut="fadeOut"
-        progressBar
-        closeOnToastrClick
-      />
     </div>
   );
 }
