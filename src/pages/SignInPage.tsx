@@ -9,18 +9,48 @@ import AuthButton from '../components/AuthButton'
 import { Link } from 'react-router-dom'
 
 export default function SignInPage() {
-	const [email, setEmail] = useState("")
-	const [password, setPassword] = useState("")
+	const [formData, setFormData] = useState({
+		email: '',
+		password: ''
+	})
+
 	const [loading, setLoading] = useState(true)
 	const [errors, setErrors] = useState({ email: "", password: "" })
 	const dispatch = useDispatch()
 
+	const { email, password } = formData
+	const { email: email_err, password: password_err } = errors
+
+	const handleInput = (e: any) => {
+		const { id, value } = e.target
+		setFormData((prevState) => ({
+			...prevState,
+			[id]: value
+		}))
+		setErrors((prevState) => ({
+			...prevState,
+			[id]: ''
+		}))
+	}
+
+	const validateFields = (url: string) => {
+		if (url.trim().length === 0) return toast.error('Url not found');
+		const fieldValues: any = { ...formData }
+		for (const field in fieldValues) {
+			if (fieldValues[field]?.trim().length === 0)
+				return setErrors((prevState) => ({
+					...prevState,
+					[field]: 'This field is required'
+				}))
+		}
+
+		return true;
+	}
+
 	const handleSubmit = async (e: any) => {
 		e.preventDefault()
 		const url = process.env.REACT_APP_API_BASE_URL || ''
-		if (url.trim().length === 0) return toast.error('Url not found');
-		if (email.trim().length === 0) return setErrors({ ...errors, email: "This field is required" })
-		if (password.trim().length === 0) return setErrors({ ...errors, password: "This field is required" })
+		if (validateFields(url) !== true) return;
 		setLoading(true)
 		try {
 			const res = await axios.post(`${url}/login`, { email, password })
@@ -40,10 +70,13 @@ export default function SignInPage() {
 			const { status, data } = error.response
 			switch (status) {
 				case 422:
-					const errs = data?.errors
-					const emailErr = errs?.email ? errs.email[0] : ""
-					const passwordErr = errs?.password ? errs.password[0] : ""
-					setErrors({ ...errors, email: emailErr, password: passwordErr })
+					const { errors: err } = data
+					for (const key in err) {
+						setErrors((prevState) => ({
+							...prevState,
+							[key]: err[key][0]
+						}))
+					}
 					break;
 
 				default:
@@ -52,25 +85,6 @@ export default function SignInPage() {
 			}
 		} finally {
 			setLoading(false)
-		}
-	}
-
-	const handleInput = (e: any) => {
-		const { id, value } = e.target
-
-		switch (id) {
-			case 'email':
-				setEmail(value)
-				setErrors({ ...errors, email: "" })
-				break;
-
-			case 'password':
-				setPassword(value)
-				setErrors({ ...errors, password: "" })
-				break;
-
-			default:
-				break;
 		}
 	}
 
@@ -85,14 +99,14 @@ export default function SignInPage() {
 			<Input
 				type="email" title="Email" id="email"
 				placeholder='Youremail@mail.com'
-				value={email} error={errors?.email}
+				value={email} error={email_err}
 				event={handleInput}
 			/>
 
 			<Input
 				title="Password" id="password"
 				value={password}
-				error={errors?.password}
+				error={password_err}
 				event={handleInput}
 				isPassword={true}
 			/>

@@ -9,86 +9,87 @@ import AuthButton from '../components/AuthButton'
 import { Link } from 'react-router-dom'
 
 export default function SignUpPage() {
-	const [name, setName] = useState("")
-	const [email, setEmail] = useState("")
-	const [password, setPassword] = useState("")
-	const [password_confirmation, setPasswordConfirmation] = useState("")
+	const [formData, setFormData] = useState({
+		name: '',
+		email: '',
+		password: '',
+		password_confirmation: ''
+	})
+
 	const [loading, setLoading] = useState(true)
 	const [errors, setErrors] = useState({ name: "", email: "", password: "", password_confirmation: "" })
 	const dispatch = useDispatch()
 
-	const handleSubmit = async (e: any) => {
-		e.preventDefault()
-		const url = process.env.REACT_APP_API_BASE_URL || ''
-		if (url.trim().length === 0) return toast.error('Url not found');
-		if (name.trim().length === 0) return setErrors({ ...errors, name: "This field is required" })
-		if (email.trim().length === 0) return setErrors({ ...errors, email: "This field is required" })
-		if (password.trim().length === 0) return setErrors({ ...errors, password: "This field is required" })
-		if (password_confirmation.trim().length === 0)
-			return setErrors({ ...errors, password_confirmation: "This field is required" })
-		if (password_confirmation.trim() !== password.trim())
-			return setErrors({ ...errors, password_confirmation: "Password confirmation failed!" })
-		setLoading(true)
-		try {
-			const res = await axios.post(`${url}/register`, { name, email, password, password_confirmation })
-
-			const { message, data } = res.data
-
-			const { user, token, uid } = data
-
-			dispatch(setCurrentUser(user))
-
-			localStorage.setItem('API_TOKEN', token)
-			localStorage.setItem('USER_ID', uid)
-
-			toast.success(message)
-
-		} catch (error: any) {
-			const { status, data } = error.response
-			switch (status) {
-				case 422:
-					const errs = data?.errors
-					const emailErr = errs?.email ? errs.email[0] : ""
-					const passwordErr = errs?.password ? errs.password[0] : ""
-					const passwordConfErr = errs?.password_confirmation ? errs.password_confirmation[0] : ""
-					setErrors({ ...errors, email: emailErr, password: passwordErr, password_confirmation: passwordConfErr })
-					break;
-
-				default:
-					toast.error(data?.message)
-					break;
-			}
-		} finally {
-			setLoading(false)
-		}
-	}
+	const { name, email, password, password_confirmation } = formData
+	const { name: name_err, email: email_err, password: password_err, password_confirmation: password_confirmation_err } = errors
 
 	const handleInput = (e: any) => {
 		const { id, value } = e.target
+		setFormData((prevState) => ({
+			...prevState,
+			[id]: value
+		}))
+		setErrors((prevState) => ({
+			...prevState,
+			[id]: ''
+		}))
+	}
 
-		switch (id) {
-			case 'name':
-				setName(value)
-				setErrors({ ...errors, name: "" })
-				break;
+	const validateFields = (url: string) => {
+		if (url.trim().length === 0) return toast.error('Url not found');
+		const fieldValues: any = { ...formData }
+		for (const field in fieldValues) {
+			if (fieldValues[field]?.trim().length === 0)
+				return setErrors((prevState) => ({
+					...prevState,
+					[field]: 'This field is required'
+				}))
+		}
+		if (password_confirmation.trim() !== password.trim())
+			return setErrors({ ...errors, password_confirmation: "Password confirmation failed!" })
 
-			case 'email':
-				setEmail(value)
-				setErrors({ ...errors, email: "" })
-				break;
+		return true;
+	}
 
-			case 'password':
-				setPassword(value)
-				setErrors({ ...errors, password: "" })
-				break;
+	const handleSubmit = async (e: any) => {
+		e.preventDefault()
+		const url = process.env.REACT_APP_API_BASE_URL || ''
+		if (validateFields(url) === true) {
+			setLoading(true)
+			try {
+				const res = await axios.post(`${url}/register`, { name, email, password, password_confirmation })
 
-			case 'password_confirmation':
-				setPasswordConfirmation(value)
-				setErrors({ ...errors, password_confirmation: "" })
-				break;
+				const { message, data } = res.data
 
-			default:
-				break;
+				const { user, token, uid } = data
+
+				dispatch(setCurrentUser(user))
+
+				localStorage.setItem('API_TOKEN', token)
+				localStorage.setItem('USER_ID', uid)
+
+				toast.success(message)
+
+			} catch (error: any) {
+				const { status, data } = error.response
+				switch (status) {
+					case 422:
+						const { errors: err } = data
+						for (const key in err) {
+							setErrors((prevState) => ({
+								...prevState,
+								[key]: err[key][0]
+							}))
+						}
+						break;
+
+					default:
+						toast.error(data?.message)
+						break;
+				}
+			} finally {
+				setLoading(false)
+			}
 		}
 	}
 
@@ -103,21 +104,21 @@ export default function SignUpPage() {
 			<Input
 				type="text" title="Name" id="name"
 				placeholder='Your Name'
-				value={name} error={errors?.name}
+				value={name} error={name_err}
 				event={handleInput}
 			/>
 
 			<Input
 				type="email" title="Email" id="email"
 				placeholder='Youremail@mail.com'
-				value={email} error={errors?.email}
+				value={email} error={email_err}
 				event={handleInput}
 			/>
 
 			<Input
 				title="Password" id="password"
 				value={password}
-				error={errors?.password}
+				error={password_err}
 				event={handleInput}
 				isPassword={true}
 			/>
@@ -125,7 +126,7 @@ export default function SignUpPage() {
 			<Input
 				title="Confirm Password" id="password_confirmation"
 				value={password_confirmation}
-				error={errors?.password_confirmation}
+				error={password_confirmation_err}
 				event={handleInput}
 				isPassword={true}
 			/>
