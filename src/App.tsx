@@ -13,7 +13,7 @@ function App() {
   const user = useSelector(selectCurrentUser)
   const userLoggedIn = localStorage.getItem('API_TOKEN') && user?.email
   return (
-    <div>
+    <div className='max-w-7xl flex'>
       <ToastContainer />
       <Routes>
         {/* Home/Profile Page */}
